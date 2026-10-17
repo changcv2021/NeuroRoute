@@ -1,4 +1,8 @@
-# NeuroRoute / FlyCNS
+# FlyCNS: Connectome-Grounded Information Organization for Communication-Constrained Embodied Control
+
+<a href="https://arxiv.org/abs/2609.28816">
+  <img src="https://img.shields.io/badge/READ%20PAPER-arXiv%202609.28816-DC2626?style=for-the-badge&amp;labelColor=991B1B" height="38" alt="Read Paper">
+</a>
 
 Code for communication-constrained locomotion on the Go1 quadruped, built with JAX, MuJoCo MJX, and Brax PPO. The repository includes FlyCNS-v2, ASYM, and PERIODIC policy implementations, along with connectome prior extraction, communication accounting, and behavioral evaluation.
 
