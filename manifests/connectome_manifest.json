@@ -1,0 +1,63 @@
+{
+  "dataset": "BANC",
+  "doi": "10.7910/DVN/7WTH1N",
+  "dataverse_version": "3.0",
+  "materialization": 888,
+  "paper_synapse_version": "v2",
+  "files": [
+    {
+      "filename": "banc_888_edgelist_simple_v2.feather",
+      "filesize": 305250378,
+      "checksum": {
+        "type": "MD5",
+        "value": "394406f8a9bdf093c895f95aff4f6c49"
+      },
+      "url": "https://dataverse.harvard.edu/api/access/datafile/13992792"
+    },
+    {
+      "filename": "banc_888_edgelist_simple_v3.feather",
+      "filesize": 359161658,
+      "checksum": {
+        "type": "MD5",
+        "value": "08542b0771db7418ed474be60dc9886c"
+      },
+      "url": "https://dataverse.harvard.edu/api/access/datafile/13918810"
+    },
+    {
+      "filename": "banc_888_meta.feather",
+      "filesize": 57550610,
+      "checksum": {
+        "type": "MD5",
+        "value": "6275eda42f98c49539d1ab513d979d09"
+      },
+      "url": "https://dataverse.harvard.edu/api/access/datafile/14033740"
+    },
+    {
+      "filename": "influence_README.md",
+      "filesize": 10283,
+      "checksum": {
+        "type": "MD5",
+        "value": "a72f4d90c0a060bb2dbeba3b9db7f195"
+      },
+      "url": "https://dataverse.harvard.edu/api/access/datafile/13923092"
+    },
+    {
+      "filename": "supplemental_data_1.txt",
+      "filesize": 30318,
+      "checksum": {
+        "type": "MD5",
+        "value": "ea3184c6d14c87d2978857857835040e"
+      },
+      "url": "https://dataverse.harvard.edu/api/access/datafile/13917304"
+    },
+    {
+      "filename": "supplemental_data_6.txt",
+      "filesize": 611590,
+      "checksum": {
+        "type": "MD5",
+        "value": "af8e0bdbc7596ca46cb430a71937f2d8"
+      },
+      "url": "https://dataverse.harvard.edu/api/access/datafile/13917307"
+    }
+  ]
+}

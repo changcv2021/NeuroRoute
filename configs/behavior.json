@@ -1,0 +1,42 @@
+{
+  "phase1": {
+    "evaluation_reset_seeds": [
+      41001,
+      41002,
+      41003,
+      41004,
+      41005,
+      41006,
+      41007,
+      41008
+    ],
+    "evaluation_modes": [
+      "official_commands",
+      "scripted_commands"
+    ],
+    "evaluation_steps": 1000,
+    "scripted_command_blocks": [
+      [
+        0.8,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.4,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.8
+      ],
+      [
+        0.6,
+        0.0,
+        -0.6
+      ]
+    ],
+    "scripted_block_steps": 250
+  }
+}
