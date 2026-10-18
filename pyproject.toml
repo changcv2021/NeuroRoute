@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "neuroroute"
 version = "0.1.0"
-description = "Auditable Go1 bidirectional packet communication experiments"
+description = "FlyCNS: connectome-grounded control with constrained communication"
 requires-python = ">=3.12"
 
 [tool.hatch.build.targets.wheel]

@@ -157,3 +157,51 @@ def observation_manifest(mapping):
             "leg_mapping": mapping.manifest(), "privileged_actor_access": False,
             "physical_fault_label_to_actor": False, "cross_leg_normalization": False}
 
+
+
+from .models.memory import initial_cache
+
+
+def current_observations(observation):
+    if set(observation) != {'state', 'privileged_state'}:
+        raise ValueError('Unexpected Go1 observation keys')
+    if observation['state'].shape[-1] != 48:
+        raise ValueError('Go1 requires current 48-dimensional state')
+    # Keep the current official frame. No stacking, masking or actor privilege.
+    return {key: observation[key] for key in ('state', 'privileged_state')}
+
+class Go1Base(FaultGo1):
+    def __init__(self):
+        super().__init__(task='flat_terrain', impl='jax', fault_kind='none', noise_level=1.0)
+
+    def reset(self, rng):
+        state = super().reset(rng)
+        return state.replace(obs=current_observations(state.obs))
+
+    def step(self, state, action):
+        state = super().step(state, action)
+        return state.replace(obs=current_observations(state.obs))
+
+class FlyCNSGo1(Go1Base):
+    def __init__(self, budget=.75, **kwargs):
+        self.final_budget = budget
+        super().__init__(**kwargs)
+
+    @property
+    def action_size(self):
+        return 20
+
+    def reset(self, rng):
+        state = super().reset(rng)
+        return state.replace(obs={**state.obs, 'communication': initial_cache(),
+            'route_clock': jnp.zeros((1,), jnp.float32),
+            'routing_context': jnp.asarray((self.final_budget, 0.), jnp.float32)})
+
+    def step(self, state, action):
+        if action.shape[-1] != 20:
+            raise ValueError('Expected eight gates and twelve motors')
+        memory, clock, context = (state.obs[k] for k in ('communication', 'route_clock', 'routing_context'))
+        physical = state.replace(obs={k: state.obs[k] for k in ('state', 'privileged_state')})
+        nxt = super().step(physical, action[8:])
+        return nxt.replace(obs={**nxt.obs, 'communication': memory,
+                                'route_clock': clock+1, 'routing_context': context})

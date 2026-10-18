@@ -26,7 +26,7 @@ SECRET_PATTERNS = (
 
 
 def main():
-    manifest = json.loads((ROOT / "release/source_snapshot.json").read_text())
+    manifest = json.loads((ROOT / "manifests/source.json").read_text())
     expected = set(manifest["published_files"])
     errors = []
     counts = {"python": 0, "json": 0, "toml": 0}
@@ -56,9 +56,9 @@ def main():
         byte_count += len(raw)
         if len(raw) > 1_000_000:
             errors.append(f"Unexpected large file: {name}")
-        preserved = manifest["preserved_files"].get(name)
-        if preserved and hashlib.sha256(raw).hexdigest() != preserved["sha256"]:
-            errors.append(f"Preserved source changed: {name}")
+        expected_hash = manifest["source_sha256"].get(name)
+        if expected_hash and hashlib.sha256(raw).hexdigest() != expected_hash:
+            errors.append(f"Source checksum changed: {name}")
         try:
             content = raw.decode("utf-8-sig")
             if any(pattern.search(content) for pattern in SECRET_PATTERNS):
@@ -74,13 +74,13 @@ def main():
                 counts["toml"] += 1
         except (UnicodeError, ValueError, SyntaxError) as error:
             errors.append(f"Parse failure: {name}: {error}")
-    for name in manifest["preserved_files"]:
+    for name in manifest["source_sha256"]:
         if name not in expected:
-            errors.append(f"Preserved source absent from export list: {name}")
+            errors.append(f"Source absent from export list: {name}")
     for error in errors:
         print(error, file=sys.stderr)
     print(json.dumps(dict(status="FAILED" if errors else "PASSED", files=len(expected),
-                         preserved_sources=len(manifest["preserved_files"]), bytes=byte_count,
+                         checked_sources=len(manifest["source_sha256"]), bytes=byte_count,
                          parsed=counts, errors=len(errors),
                          scope="Static source-only checks; no GPU/runtime tests"), indent=2))
     return bool(errors)

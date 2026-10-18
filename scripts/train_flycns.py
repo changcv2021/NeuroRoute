@@ -12,13 +12,12 @@ import time
 
 
 ROOT = Path(__file__).resolve().parents[1]
-for directory in (ROOT, ROOT / "src", ROOT / "recovery_v1"):
-    sys.path.insert(0, str(directory))
+sys.path.insert(0, str(ROOT / "src"))
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, default=ROOT / "configs/flycns_v2.json")
+    parser.add_argument("--config", type=Path, default=ROOT / "configs/flycns.json")
     parser.add_argument("--budget", type=float, choices=(0.75, 0.5, 0.25), default=0.75)
     parser.add_argument("--variant", default="full")
     parser.add_argument("--seed", type=int, default=101)
@@ -60,16 +59,16 @@ def main():
     from brax.training.acme import running_statistics
     from mujoco_playground import wrapper
     from mujoco_playground.config import locomotion_params
-    from neuroroute.central_v1 import save_checkpoint
-    from neuroroute.flycns_v2 import FlyCNSGo1
-    from recovery_v2.extension_20260914.curriculum import install
-    from recovery_v2.stable_probability import make_components, make_networks
+    from neuroroute.checkpoints import save_checkpoint
+    from neuroroute.environment import FlyCNSGo1
+    from neuroroute.training import ppo as trainer
+    from neuroroute.models.probability import make_components, make_networks
 
     if jax.local_device_count() != 1 or jax.process_count() != 1:
         raise RuntimeError("This entry point requires one GPU per independent training run")
     runtime = {name: importlib.metadata.version(name) for name in config["runtime"]}
     if runtime != config["runtime"]:
-        raise RuntimeError("Installed package versions differ from configs/flycns_v2.json")
+        raise RuntimeError("Installed package versions differ from configs/flycns.json")
     env = FlyCNSGo1(args.budget)
     upstream = locomotion_params.brax_ppo_config("Go1JoystickFlatTerrain", impl="jax").to_dict()
     factory = upstream.pop("network_factory")
@@ -83,7 +82,6 @@ def main():
         budget=args.budget, variant=config["variants"][args.variant],
         pi_bio=config["pi_bio"], bio_coefficient=config["bio_coefficient"], **factory,
     )
-    trainer = install()
     args.output.mkdir(parents=True, exist_ok=False)
     write_json(args.output / "config.json", selected)
     contract = dict(family="FlyCNS-v2", entry="public_fresh_training", configuration=selected,
@@ -124,7 +122,7 @@ def main():
         progress_fn=progress, policy_params_fn=checkpoint, training_state_fn=training_state,
     )
     if args.evaluate_final:
-        from recovery_v2.behavior import make_rollout, evaluate
+        from neuroroute.evaluation.behavior import make_rollout, evaluate
         protocol = json.loads((ROOT / "configs/behavior.json").read_text())
         network, diagnostic = make_components(
             env.observation_size, env.action_size,
